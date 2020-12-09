@@ -18,3 +18,5 @@ Here are some inspiration for possible outcomes from this dataset.
 **Feature Engineering:** Create features from this rich dataset or attach some external public information to it.
 
 [Here is a link to the dataset](https://www.kaggle.com/olistbr/brazilian-ecommerce)
+
+[Get Review Sentiment Here](https://share.streamlit.io/abuton/g04-brazillian-commerce/sentiment-analysis/main.py)

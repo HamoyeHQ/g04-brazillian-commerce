@@ -8,10 +8,11 @@ def main():
 	A simple NLP app
 	"""
 
-	with open('pickle files/log_reg.pkl', 'rb') as f:
+
+	with open('sentiment analysis app/pickle files/log_reg.pkl', 'rb') as f:
 		model = pickle.load(f)
 		
-	with open('pickle files/tf_idf.pkl', 'rb') as f:
+	with open('sentiment analysis app/pickle files/tf_idf.pkl', 'rb') as f:
 		tf_idf = pickle.load(f)
 
 	st.title('Olist User Review')
@@ -39,8 +40,8 @@ def main():
 		st.subheader('Learn More About Sentiment Analysis')
 		st.write('## Model was built using Logistic Regression :sunglasses:')
 		st.write('Model was train in **Portuguese language**')
-		st.write('For Best Performance Review should be in that language')
-		st.write('Option to translate to English is Available')
+		st.write('''For Best Performance Review should be in that language' \n
+		'Option to translate to English is Available''')
 		# st.write('If you want other language Translation')
 
 
