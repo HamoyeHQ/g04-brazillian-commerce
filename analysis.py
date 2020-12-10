@@ -1,9 +1,6 @@
 import streamlit as st
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
 import plotly.express as px
-import os
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
 
@@ -11,12 +8,10 @@ st.set_option('deprecation.showPyplotGlobalUse', False)
 def load_order_data(allow_output_mutation=True):
 	  data = pd.read_csv('data/olist_orders_dataset.csv')
 	  return data
-
 @st.cache
 def load_customer_data(allow_output_mutation=True):
 	  data = pd.read_csv('data/olist_customers_dataset.csv')
 	  return data
-
 @st.cache
 def load_review_data():
 	  data = pd.read_csv('data/olist_order_reviews_dataset.csv')
@@ -73,125 +68,6 @@ df5 = df4.merge(order, on='order_id')
 df6 = df5.merge(translation, on='product_category_name')
 df = df6.merge(customer, on='customer_id')
 
-
-
-#Customized plotting functions for visualizations
-def format_spines(ax, right_border=True):
-    
-    ax.spines['bottom'].set_color('#666666')
-    ax.spines['left'].set_color('#666666')
-    ax.spines['top'].set_visible(False)
-    if right_border:
-        ax.spines['right'].set_color('#FFFFFF')
-    else:
-        ax.spines['right'].set_color('#FFFFFF')
-    ax.patch.set_facecolor('#FFFFFF')
-
-def count_plot(feature, df, colors='Greens_d', hue=False, ax=None, title=''):
-    
-    # Preparing variables
-    ncount = len(df)
-    if hue != False:
-        ax = sns.countplot(x=feature, data=df, palette=colors, hue=hue, ax=ax)
-    else:
-        ax = sns.countplot(x=feature, data=df, palette=colors, ax=ax)
-        
-    format_spines(ax)
-    
-    # Setting percentage
-    for p in ax.patches:
-        x=p.get_bbox().get_points()[:,0]
-        y=p.get_bbox().get_points()[1,1]
-
-        ax.annotate(y, (x.mean(), y), 
-                ha='center', va='bottom') # set the alignment of the text
-    
-    # Final configuration
-    if not hue:
-        ax.set_title(df[feature].describe().name + ' Analysis', size=13, pad=15)
-    else:
-        ax.set_title(df[feature].describe().name + ' Analysis by ' + hue, size=13, pad=15)  
-    if title != '':
-        ax.set_title(title)       
-    plt.tight_layout()
-    
-    
-def bar_plot(x, y, df, colors='Blues_d', hue=False, ax=None, value=False, title=''):
-    
-    # Preparing variables
-    try:
-        ncount = sum(df[y])
-    except:
-        ncount = sum(df[x])
-    #fig, ax = plt.subplots()
-    if hue != False:
-        ax = sns.barplot(x=x, y=y, data=df, palette=colors, hue=hue, ax=ax, ci=None)
-    else:
-        ax = sns.barplot(x=x, y=y, data=df, palette=colors, ax=ax, ci=None)
-
-    plt.xticks(fontsize=25, fontweight='bold')
-    plt.yticks(fontsize=25, fontweight='bold')
-
-    # Setting borders
-    format_spines(ax)
-
-    # Setting percentage
-    for p in ax.patches:
-        xp=p.get_bbox().get_points()[:,0]
-        yp=p.get_bbox().get_points()[1,1]
-        if value:
-            ax.annotate('{:.2f}k'.format(yp/1000), (xp.mean(), yp), 
-                    ha='center', va='bottom') # set the alignment of the text
-        else:
-            ax.annotate('{:.1f}%'.format(100.*yp/ncount), (xp.mean(), yp), 
-                    ha='center', va='bottom') # set the alignment of the text
-    if not hue:
-        ax.set_title(df[x].describe().name + ' Analysis', size=12, pad=15)
-    else:
-        ax.set_title(df[x].describe().name + ' Analysis by ' + hue, size=12, pad=15)
-    if title != '':
-        ax.set_title(title)  
-    plt.tight_layout()
-    
-    
-def categorical_plot(cols_cat, axs, df):
-    
-    idx_row = 0
-    for col in cols_cat:
-        # Returning column index
-        idx_col = cols_cat.index(col)
-
-        # Verifying brake line in figure (second row)
-        if idx_col >= 3:
-            idx_col -= 3
-            idx_row = 1
-
-        # Plot params
-        names = df[col].value_counts().index
-        heights = df[col].value_counts().values
-
-        # Bar chart
-        axs[idx_row, idx_col].bar(names, heights, color='navy')
-        if (idx_row, idx_col) == (0, 2):
-            y_pos = np.arange(len(names))
-            axs[idx_row, idx_col].tick_params(axis='x', labelrotation=30)
-        if (idx_row, idx_col) == (1, 1):
-            y_pos = np.arange(len(names))
-            axs[idx_row, idx_col].tick_params(axis='x', labelrotation=90)
-
-        total = df[col].value_counts().sum()
-        axs[idx_row, idx_col].patch.set_facecolor('#FFFFFF')
-        format_spines(axs[idx_row, idx_col], right_border=False)
-        for p in axs[idx_row, idx_col].patches:
-            w, h = p.get_width(), p.get_height()
-            x, y = p.get_xy()
-            axs[idx_row, idx_col].annotate('{:.1%}'.format(h/1000), (p.get_x()+.29*w,
-                                            p.get_y()+h+20), color='k')
-
-        # Plot configuration
-        axs[idx_row, idx_col].set_title(col, size=12)
-        axs[idx_row, idx_col].set_ylim(0, heights.max()+120)
-
 #cleaning up and re-engineering some columns
 df['order_purchase_year'] = df.order_purchase_timestamp.apply(lambda x: x.year)
 df['order_purchase_month'] = df.order_purchase_timestamp.apply(lambda x: x.month)
@@ -217,10 +93,18 @@ df['expected_vs_shipdate']=df['expected_vs_shipdate'].astype('timedelta64[h]')
 df['expected_duration']=(df['order_estimated_delivery_date']-df['order_purchase_timestamp'])/24
 df['expected_duration']=df['expected_duration'].astype('timedelta64[h]')
 
-def main():
+def analysis():
 	"""
 	Main App
 	"""
+
+	st.markdown("""
+		**Recommendations::** \n
+		1. Olist stores should ensure reduced delivery time for ordered goods. \n
+		2. Improve their logistics on good delivery \n
+		3. They could establish stores in different cities to enhance quick delivery - Olist Stores is located in Curitiba - PR(Puerto Rico). Majority of orders from same state were delivered on time and have high review scores.\n
+		4. The top cities with high orders and sales showed a small average delivery time which indicates that delivery time is a major cause of customer churn \n
+		""")
 
 	st.title('Time Series Analysis')
 
@@ -322,9 +206,9 @@ def main():
 	df_count_cust = df_count_cust.groupby(["order_count"]).count().reset_index().rename(columns={"customer_unique_id": "num_customer"})
 	df_count_cust["percentage_customer"] = 100.0 * df_count_cust["num_customer"] / df_count_cust["num_customer"].sum()
 	st.dataframe(df_count_cust.head(10))
-	st.text('`96% of customers only buy with Olist once :amazed:, which is a big problem.`')
+	st.text('*96% of customers only buy with Olist once :amazed:, which is a big problem.*')
 
-	st.write('The Year **2016**')
+	st.write('**2016**')
 	df_count_cust= df_order_2016.groupby(['customer_unique_id']).count().reset_index()
 	df_count_cust["order_count"] = df_count_cust["order_id"]
 	df_count_cust = df_count_cust.drop(["order_id", "year_month", "payment_value", "shop_times"], axis=1)
@@ -332,7 +216,7 @@ def main():
 	df_count_cust["percentage_customer"] = 100.0 * df_count_cust["num_customer"] / df_count_cust["num_customer"].sum()
 	st.dataframe(df_count_cust)
 
-	st.write('The Year **2017**')
+	st.write('**2017**')
 	df_count_cust= df_order_2017.groupby(['customer_unique_id']).count().reset_index()
 	df_count_cust["order_count"] = df_count_cust["order_id"]
 	df_count_cust = df_count_cust.drop(["order_id", "year_month", "payment_value", "shop_times"], axis=1)
@@ -340,7 +224,7 @@ def main():
 	df_count_cust["percentage_customer"] = 100.0 * df_count_cust["num_customer"] / df_count_cust["num_customer"].sum()
 	st.dataframe(df_count_cust)
 
-	st.write('The Year **2018**')
+	st.write('**2018**')
 	df_count_cust= df_order_2018.groupby(['customer_unique_id']).count().reset_index()
 	df_count_cust["order_count"] = df_count_cust["order_id"]
 	df_count_cust = df_count_cust.drop(["order_id", "year_month", "payment_value", "shop_times", 'order_purchase_year'], axis=1)
@@ -350,5 +234,67 @@ def main():
 	st.write('### The Olist stores has new customers every year, but they seem not to continue patronizing them.')
 
 	st.subheader('**RootCause Analysis**')
+
+	st.markdown('Why 96% of customers shop with us only once? **Key factors include**')
+	st.write("""
+		1. Price \n
+		2. Customer Experience - proxy by Review \n
+		3. Delivery Duration \n
+		""")
+
+	st.text("**Since we have review scores and order delivery time, we will focus here first.**")
+	#checking the average shipping time for top cities
+	df_state = df.groupby(['order_purchase_year', 'customer_state'], as_index=False).mean().loc[:, ['order_purchase_year','customer_state','expected_duration','ship_duration', 'tocarrier_duration', 'lastmile_duration','expected_vs_shipdate','review_score']].sort_values(by=['ship_duration'], ascending=True)
+	st.write('checking the average shipping time for top cities')
+	st.dataframe(df_state.head(10))
+	st.write('The states(PR, SP, MG) from which most sales where made have low average delivery time which would have enhanced the orders from these cities.')
+	# Average shipping time and review scores
+	df_quality = df.groupby(['order_purchase_year'], as_index=False).mean().loc[:, ['order_purchase_year','expected_duration','ship_duration', 'tocarrier_duration', 'lastmile_duration','expected_vs_shipdate','review_score']]
+	st.write('Average shipping time and review scores')
+	st.dataframe(df_quality.head(10))
+	st.write('''
+		**Although our review score is not too bad, we have a very long end-to-end ship duration. \n
+		The review score is high because our expected delivery date is almost a month, which is almost not exceeded every time. \n
+		As indicated in the dataset documentation, the customers are sent a review form on delivery or when estimated delivery date is reached. \n
+		They would generally give a good review score as it does not exceed the expected delivery date.**
+
+  ''')
+  #Let's visualize the different delivery times
+  #drop outliers to make the histograms clearer
+	df_quality_chart_1 = df[df.expected_duration < 50] #drop any expected duration more than 60 days from purchase date
+	df_quality_chart_2 = df[df.ship_duration < 50] #drop any shipping duration more than 60 days from purchase date
+	df_quality_chart_3 = df[(df['tocarrier_duration'] < 20) & (df['tocarrier_duration'] > -50)]
+	df_quality_chart_4 = df[(df['lastmile_duration'] < 30)] 
+	df_quality_chart_5 = df[(df['expected_vs_shipdate'] > 0) & (df['expected_vs_shipdate'] < 100)]
+
+	st.write("Let\'s visualize the different delivery times")
+	fig = px.histogram(df_quality_chart_1, x='expected_duration', nbins=30, width=800, title='Expected Ship Duration 2016-2018 (days)')
+	st.plotly_chart(fig)
+
+	fig = px.histogram(df_quality_chart_2, x='ship_duration', nbins=30, width=800, title='Ship Duration 2016-2018 (days)')
+	st.plotly_chart(fig)
+
+	fig = px.histogram(df_quality_chart_3, x='tocarrier_duration', nbins=50, width=800, title='Delivery time from retailers to carriers 2016-2018 (days)')
+	st.plotly_chart(fig)
+
+	fig = px.histogram(df_quality_chart_4, x='lastmile_duration', nbins=30, width=800, title='Delivery time from carriers to customers 2016-2018 (days)')
+	st.plotly_chart(fig)
+
+	fig = px.histogram(df_quality_chart_5, x='expected_vs_shipdate', nbins=15, width=800, title='Difference between expected ship date and delivered date')
+	st.plotly_chart(fig)
+	st.write("**This delivery performance won't keep any customers. Average duration to ship a product is between 15-30 days!**")
+	st.write('Let check the distribution of review scores')
+
+	fig = px.histogram(df, x='review_score', width=700, title='Review Score 2016-2018')
+	st.plotly_chart(fig)
+
+	st.markdown("""
+		**Recommendations::** \n
+		1. Olist stores should ensure reduced delivery time for ordered goods. \n
+		2. Improve their logistics on good delivery \n
+		3. They could establish stores in different cities to enhance quick delivery - Olist Stores is located in Curitiba - PR(Puerto Rico). Majority of orders from same state were delivered on time and have high review scores.\n
+		4. The top cities with high orders and sales showed a small average delivery time which indicates that delivery time is a major cause of customer churn \n
+		""")
+
 if __name__ == '__main__':
-	main()
+	analysis()

@@ -1,6 +1,7 @@
 import streamlit as st
 import pickle
 from google_trans_new import google_translator
+from analysis import analysis
 
 
 def main():
@@ -15,7 +16,7 @@ def main():
 		tfidf_vectorizer = pickle.load(f)
 
 	st.title('Olist User Review')
-	menu = ['Home', 'About']
+	menu = ['Home', 'Analysis', 'About']
 	choice = st.sidebar.selectbox('Menu', menu)
 
 	try:
@@ -38,17 +39,18 @@ def main():
 						st.error('**Review text is Negative :cry: :worried:**')
 
 
-		if choice == 'About':
-			st.subheader('Learn More About Sentiment Analysis')
-			st.write('## Model was built using Logistic Regression :sunglasses:')
-			st.write('Model was train in **Portuguese language**')
-			st.write('''Reviews should be in that language (Portuguese)  \n
-			Option to translate to English is Available''')
-			# st.write('If you want other language Translation')
 	except :
 		st.write('**:eyes:** Check your Internet Connectivity!! **:eyes:**')
 
+	if choice == 'About':
+		st.subheader('Learn More About Sentiment Analysis')
+		st.write('## Model was built using Logistic Regression :sunglasses:')
+		st.write('Model was train in **Portuguese language**')
+		st.write('''Reviews should be in that language (Portuguese)  \n
+			Option to translate to English is Available''')
 
+	if choice == 'Analysis':
+		analysis()
 
 
 if __name__ == '__main__':
