@@ -14,13 +14,11 @@ with open('sentiment analysis app/pickle files/tfidf_vectorizer.pkl', 'rb') as f
 def one_time_sentiment():
 	st.subheader('Sentiment Analyzer')
 	review = st.text_area('Review Text', 'Enter your Review in Portuguese')
-	try:
-		trans_text = translator.translate(text=review, lang_tgt='en')
-		st.write('Would you like to translate')
-		if st.button('Translate'):
-			st.text_area('Translated Review Text', trans_text)
-	except:
-		st.error('Please Check your Network')
+	trans_text = translator.translate(text=review, lang_tgt='en')
+	st.write('Would you like to translate')
+	if st.button('Translate'):
+		st.text_area('Translated Review Text', trans_text)
+	st.error('Please Check your Network')
 	if st.button('Get Sentiment'):
 		if translator.detect(review)[0] != 'pt':
 			st.warning('Review Text has to be in Portuguese language **:see_no_evil:**')
