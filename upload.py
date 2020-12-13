@@ -30,7 +30,7 @@ def upload_data():
 			reviews['sentiment_class'] = reviews['sentiment_class'].map({1:'Positive', 0:'Negative'})
 			# view_sentiment = st.button('Click to View Sentiments')
 			# n = int(st.text_input('number of rows to display?'))
-			st.dataframe(reviews[['review_comment_message', 'sentiment_class']].head(n), width=600)
+			st.dataframe(reviews[['review_comment_message', 'sentiment_class']].head(20), width=600)
 			pct_pos = reviews['sentiment_class'].value_counts(normalize=True)*100
 			st.write(pct_pos)
 			if reviews['sentiment_class'][0] == 'Positive':

@@ -8,13 +8,6 @@ def main():
 	"""
 	A simple NLP app
 	"""
-
-	with open('sentiment analysis app/pickle files/log_reg.pkl', 'rb') as f:
-		model = pickle.load(f)
-		
-	with open('sentiment analysis app/pickle files/tfidf_vectorizer.pkl', 'rb') as f:
-		tfidf_vectorizer = pickle.load(f)
-
 	st.title('Olist User Review')
 	menu = ['Data Analysis', 'Sentiment', 'Batch Sentiment', 'About']
 	choice = st.sidebar.selectbox('Menu', menu)
@@ -25,9 +18,9 @@ def main():
 		st.write('Model was train in **Portuguese language**')
 		st.write('''Reviews should be in that language (Portuguese)  \n
 			Option to translate to English is Available''')
-		st.write('**Meet the Team!!!**')
-		st.image('data/test.jpg', width=150, height=30)
-		st.write('Jerry\n Web App')
+		st.write('##**Meet the Team!!!**')
+		# st.image('data/test.jpg', width=150, height=30)
+		# st.write('Jerry\n Web App')
 
 	if choice == 'Data Analysis':
 		analysis()

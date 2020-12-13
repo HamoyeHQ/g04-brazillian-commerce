@@ -1,14 +1,26 @@
 from google_trans_new import google_translator
 import streamlit as st
+import pickle
 translator = google_translator()	
+
+
+with open('sentiment analysis app/pickle files/log_reg.pkl', 'rb') as f:
+	model = pickle.load(f)
+	
+with open('sentiment analysis app/pickle files/tfidf_vectorizer.pkl', 'rb') as f:
+	tfidf_vectorizer = pickle.load(f)
+
 
 def one_time_sentiment():
 	st.subheader('Sentiment Analyzer')
 	review = st.text_area('Review Text', 'Enter your Review in Portuguese')
-	trans_text = translator.translate(text=review, lang_tgt='en')
-	st.write('Would you like to translate')
-	if st.button('Translate'):
-		st.text_area('Translated Review Text', trans_text)
+	try:
+		trans_text = translator.translate(text=review, lang_tgt='en')
+		st.write('Would you like to translate')
+		if st.button('Translate'):
+			st.text_area('Translated Review Text', trans_text)
+	except:
+		st.error('Please Check your Network')
 	if st.button('Get Sentiment'):
 		if translator.detect(review)[0] != 'pt':
 			st.warning('Review Text has to be in Portuguese language **:see_no_evil:**')
