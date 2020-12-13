@@ -4,8 +4,8 @@ import plotly.express as px
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
 
-@st.cache
-def load_order_data(allow_output_mutation=True):
+@st.cache(allow_output_mutation=True)
+def load_order_data():
 	  data = pd.read_csv('data/olist_orders_dataset.csv')
 	  return data
 @st.cache
