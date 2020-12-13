@@ -18,7 +18,6 @@ def one_time_sentiment():
 	st.write('Would you like to translate')
 	if st.button('Translate'):
 		st.text_area('Translated Review Text', trans_text)
-	st.error('Please Check your Network')
 	if st.button('Get Sentiment'):
 		if translator.detect(review)[0] != 'pt':
 			st.warning('Review Text has to be in Portuguese language **:see_no_evil:**')
